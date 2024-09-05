@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Products Prediction</title>
+
+    <!-- Bootstrap CDN for CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS for further styling if needed -->
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            margin-bottom: 20px;
+        }
+
+        #plotImage {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Amazon Products Prediction</h1>
+
+        <!-- Button Group -->
+        <div class="text-center">
+            <button id="residualPlotButton" class="btn btn-primary">Run Prediction (Residual Plot)</button>
+            <button id="heatmapButton" class="btn btn-info">Generate Heatmap</button>
+            <button id="boxplotButton" class="btn btn-success">Generate Box Plot</button>
+            <button id="scatterplotButton" class="btn btn-warning">Generate Scatterplot</button>
+        </div>
+
+        <!-- Results Section -->
+        <div class="text-center mt-4">
+            <h3>Results:</h3>
+            <p>RMSE: <span id="rmse"></span></p>
+            <p>R-Squared: <span id="r2"></span></p>
+            <img id="plotImage" src="" alt="Plot will be shown here" class="img-fluid rounded shadow" style="max-width: 700px;"/>
+        </div>
+    </div>
+
+    <!-- Bootstrap CDN for JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function fetchPlot(url, rmse = false) {
+            fetch(url, { method: 'GET' })
+            .then(response => response.json())
+            .then(data => {
+                if (rmse) {
+                    document.getElementById('rmse').innerText = data.rmse;
+                    document.getElementById('r2').innerText = data.r2;
+                }
+                document.getElementById('plotImage').src = 'data:image/png;base64,' + data.plot_url;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        document.getElementById('residualPlotButton').onclick = function() {
+            fetchPlot('/predict', true);
+        };
+
+        document.getElementById('heatmapButton').onclick = function() {
+            fetchPlot('/heatmap');
+        };
+
+        document.getElementById('boxplotButton').onclick = function() {
+            fetchPlot('/boxplot');
+        };
+
+        document.getElementById('scatterplotButton').onclick = function() {
+            fetchPlot('/scatterplot');
+        };
+    </script>
+</body>
+</html>
